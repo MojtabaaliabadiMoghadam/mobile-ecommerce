@@ -1,98 +1,100 @@
+# =====================================================================
+#  اکسیر موبایل — فروشگاه موبایل با Next.js + PostgreSQL
+#  اجرا:            docker compose up -d
+#  seed دستی:      docker compose run --rm seed
+#  نکته: MySQL / phpMyAdmin / لاراول / Nuxt حذف شده‌اند؛
+#        این پروژه فقط با PostgreSQL (نسخه ۱۴ به بالا) کار می‌کند.
+# =====================================================================
 services:
   # ----------------------------------------------------
-  # 1. MySQL 8 Database
+  # 1. PostgreSQL 16 — دیتابیس اصلی برنامه (Drizzle ORM)
   # ----------------------------------------------------
-  mysql:
-    image: mysql:8.0
-    container_name: elixirmobile_mysql
+  postgres:
+    image: postgres:16-alpine
+    container_name: elixirmobile_postgres
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: elixir_mobile
-      MYSQL_USER: elixir
-      MYSQL_PASSWORD: Elixir@12345
-      MYSQL_ROOT_PASSWORD: root_password
+      POSTGRES_DB: app_db
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app_password
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d app_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     networks:
-      - elixirmobile_net
+      elixirmobile_net:
+        aliases:
+          - db   # تا در زمان build هم بشود با نام `db` به دیتابیس وصل شد
 
   # ----------------------------------------------------
-  # 2. phpMyAdmin Web Interface (http://localhost:8080)
+  # 2. برنامه Next.js (فرانت‌اند + API + پنل ادمین)
+  #    در اولین اجرا: نصب، ساخت جداول (drizzle-kit push)، seed، سپس start
   # ----------------------------------------------------
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin:latest
-    container_name: elixirmobile_phpmyadmin
-    restart: unless-stopped
-    depends_on:
-      - mysql
-    environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
-      PMA_USER: root
-      PMA_PASSWORD: root_password
-      UPLOAD_LIMIT: 64M
-    ports:
-      - "8080:80"
-    networks:
-      - elixirmobile_net
-
-  # ----------------------------------------------------
-  # 3. Laravel 11 Backend REST API (http://localhost:8000)
-  # ----------------------------------------------------
-  laravel.api:
+  app:
     build:
-      context: ./laravel-backend
+      context: .
       dockerfile: Dockerfile
-    container_name: elixirmobile_laravel
+    image: elixirmobile/app:latest
+    container_name: elixirmobile_app
     restart: unless-stopped
-    working_dir: /var/www
     depends_on:
-      - mysql
+      postgres:
+        condition: service_healthy
     environment:
-      APP_NAME: "MobileCenter API"
-      APP_ENV: local
-      APP_KEY: "base64:c29tZXJhbmRvbWtleXRvY2hhbmdlaW5wcm9kdWN0aW9uIQ=="
-      APP_DEBUG: "true"
-      APP_URL: "http://localhost:8000"
-      FRONTEND_URL: "http://localhost:3000"
-      DB_CONNECTION: mysql
-      DB_HOST: mysql
-      DB_PORT: 3306
-      DB_DATABASE: elixir_mobile
-      DB_USERNAME: elixir
-      DB_PASSWORD: Elixir@12345
-      SANCTUM_STATEFUL_DOMAINS: "localhost:3000,127.0.0.1:3000"
-      SESSION_DOMAIN: "localhost"
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./laravel-backend:/var/www
-    networks:
-      - elixirmobile_net
-
-  # ----------------------------------------------------
-  # 4. Nuxt 4 / Vue 3 Frontend SSR (http://localhost:3000)
-  # ----------------------------------------------------
-  nuxt.frontend:
-    build:
-      context: ./nuxt-frontend
-      dockerfile: Dockerfile
-    container_name: elixirmobile_nuxt
-    restart: unless-stopped
-    working_dir: /app
-    depends_on:
-      - laravel.api
-    environment:
-      NODE_ENV: development
-      NUXT_PUBLIC_API_URL: "http://laravel.api:8000/api"
-      NUXT_PUBLIC_SITE_URL: "http://localhost:3000"
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://app:app_password@postgres:5432/app_db
+      AUTH_SECRET: dev-only-secret-change-me-in-production-please
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      ZARINPAL_SANDBOX: "true"
     ports:
       - "3000:3000"
-    volumes:
-      - ./nuxt-frontend:/app
-      - /app/node_modules
+    networks:
+      - elixirmobile_net
+
+  # ----------------------------------------------------
+  # 3. ابزار مدیریت دیتابیس (گزینه‌ای) — جایگزین phpMyAdmin برای Postgres
+  #    اجرا: docker compose --profile admin up -d
+  #    آدرس: http://localhost:8081  (System: postgres / user: app / pass: app_password)
+  # ----------------------------------------------------
+  adminer:
+    image: adminer:latest
+    container_name: elixirmobile_adminer
+    restart: unless-stopped
+    profiles: ["admin"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+      ADMINER_DESIGN: pepa-linha
+    ports:
+      - "8081:8080"
+    networks:
+      - elixirmobile_net
+
+  # ----------------------------------------------------
+  # 4. Seed داده‌های نمونه (۲۶ محصول، ۶ کاربر، ۱۰ مقاله + بنر/تنظیمات/درگاه)
+  #    idempotent است: اگر داده موجود باشد، کاری انجام نمی‌دهد.
+  #    اجرا: docker compose run --rm seed
+  # ----------------------------------------------------
+  seed:
+    image: elixirmobile/app:latest
+    container_name: elixirmobile_seed
+    profiles: ["seed"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://app:app_password@postgres:5432/app_db
+      AUTH_SECRET: dev-only-secret-change-me-in-production-please
+    command: sh -c "npx tsx scripts/seed.ts && npx tsx scripts/seed_articles_once.ts"
     networks:
       - elixirmobile_net
 
@@ -101,5 +103,5 @@ networks:
     driver: bridge
 
 volumes:
-  mysql_data:
+  pg_data:
     driver: local
