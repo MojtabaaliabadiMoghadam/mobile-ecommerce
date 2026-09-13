@@ -1,0 +1,105 @@
+services:
+  # ----------------------------------------------------
+  # 1. MySQL 8 Database
+  # ----------------------------------------------------
+  mysql:
+    image: mysql:8.0
+    container_name: elixirmobile_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: elixir_mobile
+      MYSQL_USER: elixir
+      MYSQL_PASSWORD: Elixir@12345
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - elixirmobile_net
+
+  # ----------------------------------------------------
+  # 2. phpMyAdmin Web Interface (http://localhost:8080)
+  # ----------------------------------------------------
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: elixirmobile_phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root_password
+      UPLOAD_LIMIT: 64M
+    ports:
+      - "8080:80"
+    networks:
+      - elixirmobile_net
+
+  # ----------------------------------------------------
+  # 3. Laravel 11 Backend REST API (http://localhost:8000)
+  # ----------------------------------------------------
+  laravel.api:
+    build:
+      context: ./laravel-backend
+      dockerfile: Dockerfile
+    container_name: elixirmobile_laravel
+    restart: unless-stopped
+    working_dir: /var/www
+    depends_on:
+      - mysql
+    environment:
+      APP_NAME: "MobileCenter API"
+      APP_ENV: local
+      APP_KEY: "base64:c29tZXJhbmRvbWtleXRvY2hhbmdlaW5wcm9kdWN0aW9uIQ=="
+      APP_DEBUG: "true"
+      APP_URL: "http://localhost:8000"
+      FRONTEND_URL: "http://localhost:3000"
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: elixir_mobile
+      DB_USERNAME: elixir
+      DB_PASSWORD: Elixir@12345
+      SANCTUM_STATEFUL_DOMAINS: "localhost:3000,127.0.0.1:3000"
+      SESSION_DOMAIN: "localhost"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./laravel-backend:/var/www
+    networks:
+      - elixirmobile_net
+
+  # ----------------------------------------------------
+  # 4. Nuxt 4 / Vue 3 Frontend SSR (http://localhost:3000)
+  # ----------------------------------------------------
+  nuxt.frontend:
+    build:
+      context: ./nuxt-frontend
+      dockerfile: Dockerfile
+    container_name: elixirmobile_nuxt
+    restart: unless-stopped
+    working_dir: /app
+    depends_on:
+      - laravel.api
+    environment:
+      NODE_ENV: development
+      NUXT_PUBLIC_API_URL: "http://laravel.api:8000/api"
+      NUXT_PUBLIC_SITE_URL: "http://localhost:3000"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./nuxt-frontend:/app
+      - /app/node_modules
+    networks:
+      - elixirmobile_net
+
+networks:
+  elixirmobile_net:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
