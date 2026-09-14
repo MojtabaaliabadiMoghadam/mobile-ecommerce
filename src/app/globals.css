@@ -14,11 +14,16 @@
   --color-brand-700: #4338ca;
   --color-brand-800: #3730a3;
   --color-brand-900: #312e81;
-  --animate-fade-up: fade-up 0.5s ease-out both;
+  /* توجه: fill-mode «backwards» است نه «both» — تا بعد از پایان انیمیشن،
+     transform/opacity روی عنصر باقی نماند؛ transform ماندگار موجب می‌شود
+     پاپ‌آپ native سلکت‌باکس‌ها (مخصوصاً داخل مودال overflow-y-auto)
+     در برخی مرورگرها کلیپ شود یا جای اشتباه باز شود.
+     حالت پایانی keyframeها با حالت طبیعی عنصر یکی است، پس ظاهراً تفاوتی ندارد. */
+  --animate-fade-up: fade-up 0.5s ease-out backwards;
   --animate-shimmer: shimmer 1.6s linear infinite;
   --animate-pop: pop 0.25s ease-out;
-  --animate-fade-in: fade-in 0.25s ease-out both;
-  --animate-drawer-in: drawer-in 0.3s cubic-bezier(0.32, 0.72, 0, 1) both;
+  --animate-fade-in: fade-in 0.25s ease-out backwards;
+  --animate-drawer-in: drawer-in 0.3s cubic-bezier(0.32, 0.72, 0, 1) backwards;
 
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(12px); }
@@ -69,22 +74,28 @@
   .btn-danger { @apply bg-rose-600 text-white hover:bg-rose-700; }
   .input { @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100; }
 
-  /* سلکت‌باکس سفارشی — پیکان اختصاصی به‌جای ظاهر پیش‌فرض سیستم‌عامل */
+  /*
+    سلکت‌باکس سفارشی — پیکان اختصاصی به‌جای ظاهر پیش‌فرض سیستم‌عامل.
+    نکته‌ها:
+    • overflow/text-overflow روی <select> قرار نگیرد — در برخی موتورها باعث می‌شود
+      لیست optionها (که با ابعاد خود المنت اندازه/موقعیت می‌شود) درست باز نشود.
+    • رنگ option دست‌کاری نشود — iOS رنگ متن option را به پاپ‌آپ سیستم‌عامل منتقل می‌کند
+      اما پس‌زمینه را نه و متن گزینه‌ها نامرئی می‌شود (به‌نظر می‌رسد لیست باز نمی‌شود).
+  */
   select.input {
-    @apply cursor-pointer appearance-none pe-9;
+    @apply cursor-pointer pe-9;
+    appearance: none;
+    -webkit-appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: left 0.6rem center;
     background-size: 1rem 1rem;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
   }
+  select.input::-ms-expand { display: none; }
   select.input:hover { @apply border-slate-300 dark:border-slate-600; }
   .dark select.input {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   }
-  select.input option { @apply bg-white text-slate-800 dark:bg-slate-900 dark:text-slate-100; }
   .label { @apply mb-1.5 block text-sm font-medium text-slate-600 dark:text-slate-300; }
   .badge { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium; }
   .skeleton { @apply rounded-xl bg-slate-200 dark:bg-slate-800; background-image: linear-gradient(90deg, transparent, rgb(255 255 255 / .35), transparent); background-size: 200% 100%; animation: var(--animate-shimmer); }
