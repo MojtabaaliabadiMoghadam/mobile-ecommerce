@@ -5,6 +5,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { saveProduct, type VariantInput } from "@/app/actions/admin";
 import { useToast } from "@/components/ui/Toast";
 import { MultiImagePicker } from "./MultiImagePicker";
+import { Select } from "@/components/ui/Select";
 
 type P = {
   id?: number; name?: string; slug?: string; sku?: string | null; brandId?: number | null; categoryId?: number | null; shortDescription?: string | null; description?: string | null;
@@ -42,8 +43,8 @@ export function ProductForm({ product, brands, categories }: { product: P; brand
             <div className="sm:col-span-2"><label className="label">نام محصول *</label><input name="name" required defaultValue={product.name} className="input" /></div>
             <div><label className="label">Slug (آدرس سئو)</label><input name="slug" defaultValue={product.slug} className="input" dir="ltr" placeholder="samsung-galaxy-s24" /></div>
             <div><label className="label">SKU</label><input name="sku" defaultValue={product.sku ?? ""} className="input" dir="ltr" /></div>
-            <div><label className="label">برند</label><select name="brandId" defaultValue={product.brandId ?? ""} className="input"><option value="">—</option>{brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}</select></div>
-            <div><label className="label">دسته‌بندی</label><select name="categoryId" defaultValue={product.categoryId ?? ""} className="input"><option value="">—</option>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
+            <div><label className="label">برند</label><Select name="brandId" defaultValue={String(product.brandId ?? "")} label="برند" options={[{ value: "", label: "—" }, ...brands.map((b) => ({ value: String(b.id), label: b.name }))]} /></div>
+            <div><label className="label">دسته‌بندی</label><Select name="categoryId" defaultValue={String(product.categoryId ?? "")} label="دسته‌بندی" options={[{ value: "", label: "—" }, ...categories.map((c) => ({ value: String(c.id), label: c.name }))]} /></div>
             <div><label className="label">قیمت پایه (تومان) *</label><input name="basePrice" type="number" required defaultValue={product.basePrice} className="input" dir="ltr" /></div>
             <div><label className="label">قیمت قبل از تخفیف</label><input name="compareAtPrice" type="number" defaultValue={product.compareAtPrice ?? ""} className="input" dir="ltr" /></div>
             <div><label className="label">درصد تخفیف</label><input name="discountPercent" type="number" min={0} max={90} defaultValue={product.discountPercent ?? 0} className="input" dir="ltr" /></div>

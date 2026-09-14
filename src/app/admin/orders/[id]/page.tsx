@@ -5,6 +5,7 @@ import { getCurrentUser, hasPermission } from "@/lib/auth";
 import { formatDate, formatPrice, ORDER_STATUS, PAYMENT_METHOD_LABEL, PAYMENT_STATUS_LABEL, SHIPPING_METHOD } from "@/lib/utils";
 import { OrderTimeline } from "@/components/account/OrderTimeline";
 import { ActionForm } from "@/components/admin/ActionForm";
+import { Select } from "@/components/ui/Select";
 import { updateOrderStatus } from "@/app/actions/admin";
 import type { OrderStatus } from "@/db/schema";
 
@@ -57,9 +58,7 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
             <ActionForm action={updateOrderStatus} className="space-y-3" success="وضعیت سفارش به‌روزرسانی شد">
               <input type="hidden" name="id" value={o.id} />
               <div><label className="label">وضعیت جدید</label>
-                <select name="status" defaultValue={o.status} className="input">
-                  {(Object.keys(ORDER_STATUS) as OrderStatus[]).map((k) => <option key={k} value={k}>{ORDER_STATUS[k].label}</option>)}
-                </select>
+                <Select name="status" defaultValue={o.status} label="وضعیت جدید" options={(Object.keys(ORDER_STATUS) as OrderStatus[]).map((k) => ({ value: k, label: ORDER_STATUS[k].label }))} />
               </div>
               <div><label className="label">کد رهگیری پستی</label><input name="trackingCode" defaultValue={o.trackingCode ?? ""} className="input" dir="ltr" /></div>
               <div><label className="label">یادداشت</label><input name="note" className="input" placeholder="نمایش داده می‌شود به مشتری" /></div>

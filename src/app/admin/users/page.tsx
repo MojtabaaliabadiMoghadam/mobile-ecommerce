@@ -4,6 +4,7 @@ import { getAdminUsers } from "@/lib/data";
 import { getCurrentUser, hasPermission } from "@/lib/auth";
 import { ALL_PERMISSIONS, formatDateShort, formatNumber, formatPrice, ROLE_LABEL, TIERS } from "@/lib/utils";
 import { EditorModal } from "@/components/admin/EditorModal";
+import { Select } from "@/components/ui/Select";
 import { ActionButton } from "@/components/admin/ActionForm";
 import { deleteUser, saveUser } from "@/app/actions/admin";
 
@@ -21,7 +22,7 @@ function UserFields({ u }: { u?: U }) {
         <div><label className="label">موبایل</label><input name="phone" defaultValue={u?.phone ?? ""} className="input" dir="ltr" /></div>
         <div><label className="label">{u ? "رمز عبور جدید (اختیاری)" : "رمز عبور *"}</label><input name="password" type="password" className="input" dir="ltr" /></div>
         <div><label className="label">نقش</label>
-          <select name="role" defaultValue={u?.role ?? "customer"} className="input">{Object.entries(ROLE_LABEL).map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select>
+          <Select name="role" defaultValue={u?.role ?? "customer"} label="نقش" options={Object.entries(ROLE_LABEL).map(([k, l]) => ({ value: k, label: l }))} />
         </div>
         <div><label className="label">امتیاز باشگاه</label><input name="loyaltyPoints" type="number" defaultValue={u?.loyaltyPoints ?? 0} className="input" dir="ltr" /></div>
         <div><label className="label">کد تخفیف اختصاصی</label><input name="personalCoupon" defaultValue={u?.personalCoupon ?? ""} className="input" dir="ltr" /></div>

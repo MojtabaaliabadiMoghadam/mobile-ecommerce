@@ -2,6 +2,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState, useTransition } from "react";
 import { SlidersHorizontal, X, ChevronDown } from "lucide-react";
+import { Select } from "@/components/ui/Select";
 
 type Props = {
   brands: { name: string; slug: string }[];
@@ -176,17 +177,17 @@ export function SortBar({ total }: { total: number }) {
           </button>
         ))}
       </div>
-      <select
+      <Select
         value={cur}
-        onChange={(e) => {
+        onChange={(v) => {
           const p = new URLSearchParams(sp.toString());
-          p.set("sort", e.target.value);
+          p.set("sort", v);
           router.push(`${pathname}?${p.toString()}`);
         }}
-        className="input w-auto md:hidden"
-      >
-        {opts.map(([k, l]) => <option key={k} value={k}>{l}</option>)}
-      </select>
+        label="مرتب‌سازی"
+        className="w-auto md:hidden"
+        options={opts.map(([k, l]) => ({ value: k, label: l }))}
+      />
       <span className="mr-auto text-xs text-slate-500">{new Intl.NumberFormat("fa-IR").format(total)} کالا</span>
     </div>
   );
