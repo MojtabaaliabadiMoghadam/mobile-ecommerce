@@ -23,28 +23,28 @@ export default async function AdminDashboard() {
           <div key={c.label} className="card relative overflow-hidden p-5">
             <span className={`absolute -left-4 -top-4 h-20 w-20 rounded-full bg-gradient-to-br ${c.color} opacity-20`} />
             <c.icon className="h-5 w-5 text-slate-400" />
-            <p className="mt-3 text-lg font-extrabold sm:text-xl">{c.value}</p>
+            <p className="mt-3 text-base font-extrabold sm:text-xl">{c.value}</p>
             <p className="text-xs text-slate-500">{c.label}</p>
           </div>
         ))}
       </div>
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className="card p-5 lg:col-span-2">
+        <div className="card p-4 sm:p-5 lg:col-span-2">
           <h2 className="mb-3 font-bold">روند فروش (۹۰ روز اخیر)</h2>
           <RevenueChart data={st.daily} />
         </div>
-        <div className="card p-5">
+        <div className="card p-4 sm:p-5">
           <h2 className="mb-3 font-bold">وضعیت سفارشات</h2>
           <StatusPie data={pie} />
         </div>
       </div>
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className="card p-5">
+        <div className="card p-4 sm:p-5">
           <h2 className="mb-3 font-bold">پرفروش‌ترین محصولات</h2>
           <TopProductsChart data={st.topProducts} />
         </div>
         <div className="card overflow-hidden lg:col-span-2">
-          <div className="flex items-center justify-between p-5 pb-3">
+          <div className="flex items-center justify-between p-4 pb-3 sm:p-5 sm:pb-3">
             <h2 className="font-bold">آخرین سفارشات</h2>
             <Link href="/admin/orders" className="text-xs text-brand-600">همه سفارشات</Link>
           </div>
