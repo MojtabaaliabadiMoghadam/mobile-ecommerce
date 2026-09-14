@@ -1,0 +1,23 @@
+# وابستگی‌ها و خروجی‌ها
+node_modules
+.next
+out
+dist
+build
+coverage
+
+# محیط و رازها
+.env
+.env.*.local
+*.pem
+
+# فایل‌های محلی / موقت
+.git
+.gitignore
+npm-debug.log*
+.DS_Store
+.idea
+.vscode
+
+# آپلودهای محلی (در کانتینر دوباره ساخته می‌شوند)
+public/uploads

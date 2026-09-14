@@ -1,12 +1,20 @@
 {
-  "name": "nextjs-postgresql-template",
+  "name": "elixir-mobile",
+  "version": "0.1.0",
   "private": true,
+  "description": "اکسیر موبایل — فروشگاه اینترنتی گوشی موبایل (Next.js 16 + PostgreSQL + Drizzle)",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:push": "drizzle-kit push",
+    "seed": "tsx scripts/seed.ts",
+    "seed:articles": "tsx scripts/seed_articles_once.ts",
+    "seed:all": "npm run seed && npm run seed:articles",
+    "db:generate": "drizzle-kit generate",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "dotenv": "17.3.1",
@@ -29,6 +37,7 @@
     "eslint-config-next": "16.2.6",
     "postcss": "8.5.8",
     "tailwindcss": "4.1.17",
+    "tsx": "^4.23.13",
     "typescript": "5.9.3"
   }
 }

@@ -80,9 +80,19 @@ export default async function ArticlePage({ params }: Params) {
         )}
 
         <article className="prose-fa mt-8 text-[15px]">
-          {a.content.split("\n").filter(Boolean).map((p, i) => (
-            <p key={i}>{p}</p>
-          ))}
+          {a.content
+            .split("\n")
+            .map((l) => l.trim())
+            .filter(Boolean)
+            .map((l, i) =>
+              l.startsWith("## ") ? (
+                <h2 key={i} className="mt-8 mb-3 text-lg font-extrabold text-slate-900 first:mt-0 dark:text-slate-100">
+                  {l.slice(3)}
+                </h2>
+              ) : (
+                <p key={i}>{l}</p>
+              )
+            )}
         </article>
 
         {a.tags.length > 0 && (
