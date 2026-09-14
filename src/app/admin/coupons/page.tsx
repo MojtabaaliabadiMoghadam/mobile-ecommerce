@@ -4,6 +4,7 @@ import { getAdminCoupons, getAdminUsers } from "@/lib/data";
 import { getCurrentUser, hasPermission } from "@/lib/auth";
 import { formatDateShort, formatNumber } from "@/lib/utils";
 import { EditorModal } from "@/components/admin/EditorModal";
+import { Select } from "@/components/ui/Select";
 import { ActionButton } from "@/components/admin/ActionForm";
 import { deleteCoupon, saveCoupon } from "@/app/actions/admin";
 import type { Coupon } from "@/db/schema";
@@ -16,14 +17,14 @@ function Fields({ c, users }: { c?: Coupon; users: { id: number; name: string; e
       <input type="hidden" name="id" value={c?.id ?? ""} />
       <div className="grid gap-3 sm:grid-cols-2">
         <div><label className="label">کد *</label><input name="code" required defaultValue={c?.code} className="input uppercase" dir="ltr" /></div>
-        <div><label className="label">نوع</label><select name="type" defaultValue={c?.type ?? "percent"} className="input"><option value="percent">درصدی</option><option value="fixed">مبلغ ثابت (تومان)</option></select></div>
+        <div><label className="label">نوع</label><Select name="type" defaultValue={c?.type ?? "percent"} label="نوع" options={[{ value: "percent", label: "درصدی" }, { value: "fixed", label: "مبلغ ثابت (تومان)" }]} /></div>
         <div><label className="label">مقدار *</label><input name="value" type="number" required defaultValue={c?.value} className="input" dir="ltr" /></div>
         <div><label className="label">سقف تخفیف (تومان)</label><input name="maxDiscount" type="number" defaultValue={c?.maxDiscount ?? ""} className="input" dir="ltr" /></div>
         <div><label className="label">حداقل سفارش (تومان)</label><input name="minOrder" type="number" defaultValue={c?.minOrder ?? 0} className="input" dir="ltr" /></div>
         <div><label className="label">سقف استفاده</label><input name="usageLimit" type="number" defaultValue={c?.usageLimit ?? ""} className="input" dir="ltr" /></div>
         <div><label className="label">تاریخ انقضا</label><input name="expiresAt" type="date" defaultValue={c?.expiresAt ? new Date(c.expiresAt).toISOString().slice(0, 10) : ""} className="input" dir="ltr" /></div>
         <div><label className="label">اختصاصی برای کاربر</label>
-          <select name="userId" defaultValue={c?.userId ?? ""} className="input"><option value="">عمومی</option>{users.map((u) => <option key={u.id} value={u.id}>{u.name} ({u.email})</option>)}</select>
+          <Select name="userId" defaultValue={String(c?.userId ?? "")} label="اختصاصی برای کاربر" options={[{ value: "", label: "عمومی" }, ...users.map((u) => ({ value: String(u.id), label: `${u.name} (${u.email})` }))]} />
         </div>
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="isActive" defaultChecked={c?.isActive ?? true} className="accent-brand-600" /> فعال</label>
       </div>

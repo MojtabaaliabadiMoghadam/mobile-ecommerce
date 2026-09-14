@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Smartphone } from "lucide-react";
+import { Smartphone, Store } from "lucide-react";
 import { getCurrentUser, hasPermission, isStaff } from "@/lib/auth";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { AdminNav } from "@/components/admin/AdminNav";
@@ -33,10 +33,13 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-slate-200 bg-white/80 px-4 backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
           <div className="lg:hidden"><AdminNav perms={perms} mobile /></div>
-          <span className="text-sm text-slate-500">خوش آمدید، {user.name}</span>
+          <span className="min-w-0 max-w-[38vw] truncate text-sm text-slate-500 sm:max-w-none">خوش آمدید، {user.name}</span>
           <div className="mr-auto flex items-center gap-2">
             <ThemeToggle />
-            <Link href="/" className="btn-secondary h-9 px-3 text-xs">مشاهده فروشگاه</Link>
+            <Link href="/" className="btn-secondary h-9 px-3 text-xs" aria-label="مشاهده فروشگاه">
+              <Store className="h-4 w-4 sm:hidden" />
+              <span className="hidden sm:inline">مشاهده فروشگاه</span>
+            </Link>
           </div>
         </header>
         <main className="flex-1 p-4 sm:p-6">{children}</main>

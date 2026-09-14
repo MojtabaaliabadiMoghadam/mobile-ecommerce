@@ -14,15 +14,15 @@ export default async function LoyaltyPage() {
   return (
     <div className="space-y-5">
       <h1 className="text-2xl font-extrabold">باشگاه مشتریان</h1>
-      <div className={`card overflow-hidden bg-gradient-to-l ${TIERS[user.loyaltyTier].color} p-6 text-white`}>
-        <div className="flex items-center justify-between">
-          <div>
+      <div className={`card overflow-hidden bg-gradient-to-l ${TIERS[user.loyaltyTier].color} p-5 text-white sm:p-6`}>
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
             <p className="text-sm opacity-80">سطح فعلی شما</p>
-            <p className="flex items-center gap-2 text-3xl font-extrabold"><Crown className="h-8 w-8" /> {TIERS[user.loyaltyTier].label}</p>
+            <p className="flex items-center gap-2 text-2xl font-extrabold sm:text-3xl"><Crown className="h-6 w-6 shrink-0 sm:h-8 sm:w-8" /> {TIERS[user.loyaltyTier].label}</p>
           </div>
-          <div className="text-left">
+          <div className="shrink-0 text-left">
             <p className="text-sm opacity-80">امتیاز</p>
-            <p className="text-3xl font-extrabold">{formatNumber(user.loyaltyPoints)}</p>
+            <p className="text-2xl font-extrabold sm:text-3xl">{formatNumber(user.loyaltyPoints)}</p>
           </div>
         </div>
         <div className="mt-5 h-2.5 overflow-hidden rounded-full bg-white/30"><div className="h-full rounded-full bg-white transition-all duration-700" style={{ width: `${progress}%` }} /></div>
@@ -49,12 +49,12 @@ export default async function LoyaltyPage() {
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             {personalCoupons.map((c) => (
-              <div key={c.id} className="flex items-center justify-between rounded-xl border border-dashed border-brand-400 bg-brand-50/50 p-3 dark:bg-brand-900/20">
-                <div>
-                  <p className="font-mono text-lg font-bold" dir="ltr">{c.code}</p>
+              <div key={c.id} className="flex items-center justify-between gap-3 rounded-xl border border-dashed border-brand-400 bg-brand-50/50 p-3 dark:bg-brand-900/20">
+                <div className="min-w-0">
+                  <p className="break-all font-mono text-base font-bold sm:text-lg" dir="ltr">{c.code}</p>
                   <p className="text-xs text-slate-500">{c.type === "percent" ? `${c.value}٪ تخفیف` : `${formatNumber(c.value)} تومان تخفیف`}{c.maxDiscount ? ` (تا سقف ${formatNumber(c.maxDiscount)} تومان)` : ""}</p>
                 </div>
-                <Copy className="h-4 w-4 text-slate-400" />
+                <Copy className="h-4 w-4 shrink-0 text-slate-400" />
               </div>
             ))}
           </div>
@@ -64,9 +64,9 @@ export default async function LoyaltyPage() {
         <h2 className="mb-3 flex items-center gap-2 font-bold"><Star className="h-5 w-5 text-amber-500" /> تاریخچه امتیازات</h2>
         <div className="divide-y divide-slate-100 text-sm dark:divide-slate-800">
           {transactions.map((t) => (
-            <div key={t.id} className="flex items-center justify-between py-3">
-              <div><p>{t.reason}</p><p className="text-xs text-slate-400">{formatDate(t.createdAt)}</p></div>
-              <span className={`font-bold ${t.points >= 0 ? "text-emerald-600" : "text-rose-600"}`}>{t.points >= 0 ? "+" : ""}{formatNumber(t.points)}</span>
+            <div key={t.id} className="flex items-center justify-between gap-3 py-3">
+              <div className="min-w-0"><p className="break-words">{t.reason}</p><p className="text-xs text-slate-400">{formatDate(t.createdAt)}</p></div>
+              <span className={`shrink-0 font-bold ${t.points >= 0 ? "text-emerald-600" : "text-rose-600"}`}>{t.points >= 0 ? "+" : ""}{formatNumber(t.points)}</span>
             </div>
           ))}
           {transactions.length === 0 && <p className="py-6 text-center text-slate-500">هنوز تراکنشی ثبت نشده</p>}

@@ -3,6 +3,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { saveArticle, deleteArticle } from "@/app/actions/admin";
 import { MediaPicker } from "./MediaPicker";
+import { Select } from "@/components/ui/Select";
 import { useToast } from "@/components/ui/Toast";
 import type { Article, ArticleCategory } from "@/db/schema";
 
@@ -44,10 +45,7 @@ export function ArticleForm({ categories, article }: { categories: ArticleCatego
             </div>
             <div>
               <label className="label">دسته‌بندی</label>
-              <select name="categoryId" defaultValue={article?.categoryId ?? ""} className="input">
-                <option value="">—</option>
-                {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
+              <Select name="categoryId" defaultValue={String(article?.categoryId ?? "")} label="دسته‌بندی" options={[{ value: "", label: "—" }, ...categories.map((c) => ({ value: String(c.id), label: c.name }))]} />
             </div>
           </div>
           <div>

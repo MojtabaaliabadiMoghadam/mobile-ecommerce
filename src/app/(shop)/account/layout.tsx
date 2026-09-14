@@ -10,7 +10,7 @@ export default async function AccountLayout({ children }: { children: ReactNode 
   const tier = TIERS[user.loyaltyTier];
   return (
     <div className="container-x mt-6 grid gap-6 lg:grid-cols-[260px_1fr]">
-      <aside className="space-y-3">
+      <aside className="min-w-0 space-y-3">
         <div className={`card overflow-hidden bg-gradient-to-l ${tier.color} p-5 text-white`}>
           <p className="text-xs opacity-80">سطح باشگاه</p>
           <p className="text-xl font-extrabold">{tier.label}</p>
