@@ -1,43 +1,43 @@
-# اکسیر موبایل — فروشگاه اینترنتی موبایل (فروش آنلاین + حضوری)
+# Elixir Mobile — Online Mobile Store (Online + In-Store Sales)
 
-فروشگاه کامل موبایل با:
+A complete mobile phone store with:
 
-- **Frontend:** Next.js 16 (App Router) — SSR کامل برای سئو
-- **Backend:** همان‌جا (Route Handlers + Server Actions) — REST API زیر `/api/*`
-- **Database:** PostgreSQL + Drizzle ORM
-- **UI:** Tailwind CSS v4، راست‌چین (RTL)، حالت Dark/Light، کاملاً Responsive (Mobile-First)
-
----
-
-## ✨ امکانات اصلی
-
-- **فروشگاه:** صفحه اصلی با بنر و دسته‌ها، لیست محصولات با فیلتر (برند/قیمت/رنگ/حافظه/رم)، صفحه محصول با گالری و انتخاب رنگ/حافظه، سبد خرید، چک‌اوت کامل (آدرس → ارسال → پرداخت)، درگاه زرین‌پال شبیه‌سازی‌شده
-- **مقالات (بلاگ):** بخش مقالات با دسته‌بندی، سئو کامل و مدیریت از پنل ادمین
-- **دیتای دمو مقالات:** ۱۰ مقاله کامل و آماده (راهنمای خرید، مقایسه، اخبار تکنولوژی) + ۳ دسته + ورودی کتابخانه مدیا، که همراه سایر داده‌ها به‌صورت خودکار seed می‌شوند
-- **مدیریت تصاویر:** منیجر آپلود تصویر با حالت گالری (بدون هاردکد کردن آدرس)
-- **پنل مشتری:** داشبورد، سفارش‌ها با ردیابی مرحله‌ای، علاقه‌مندی، باشگاه مشتریان (برنزی/نقره‌ای/طلایی)، آدرس‌ها، پروفایل
-- **پنل مدیریت:** داشبورد آماری با نمودار، مدیریت محصولات/سفارشات/کاربران/تخفیف‌ها/مقالات/بنرها/درگاه‌ها/تنظیمات، با نقش و سطح دسترسی
-- **سئو:** متاتگ داینامیک، JSON-LD (Product/AggregateOffer/Article)، sitemap.xml و robots.txt داینامیک
+* **Frontend:** Next.js 16 (App Router) — Full SSR for SEO
+* **Backend:** Built into the same application (Route Handlers + Server Actions) — REST API under `/api/*`
+* **Database:** PostgreSQL + Drizzle ORM
+* **UI:** Tailwind CSS v4, RTL support, Dark/Light mode, fully Responsive (Mobile-First)
 
 ---
 
-## 🛠 پیش‌نیازها
+## ✨ Main Features
 
-- Node.js 18/20 یا بالاتر
-- PostgreSQL 14+ (یا Docker برای اجرای سریع: `docker compose up`)
-- npm
+* **Store:** Homepage with banners and categories, product listing with filters (brand/price/color/storage/RAM), product page with gallery and color/storage selection, shopping cart, complete checkout (address → shipping → payment), simulated ZarinPal payment gateway
+* **Articles (Blog):** Article section with categories, full SEO support, and management through the admin panel
+* **Demo Article Data:** 10 complete and ready-to-use articles (buying guides, comparisons, tech news) + 3 categories + media library entries, automatically seeded along with the other data
+* **Image Management:** Image upload manager with gallery mode (no hardcoded image URLs)
+* **Customer Panel:** Dashboard, orders with step-by-step tracking, wishlist, loyalty club (Bronze/Silver/Gold), addresses, profile
+* **Admin Panel:** Statistical dashboard with charts, management of products/orders/users/discounts/articles/banners/payment gateways/settings, with roles and permission levels
+* **SEO:** Dynamic meta tags, JSON-LD (Product/AggregateOffer/Article), dynamic `sitemap.xml` and `robots.txt`
 
 ---
 
-## 🚀 اجرای محلی (Local Development)
+## 🛠 Prerequisites
 
-### ۱) نصب وابستگی‌ها
+* Node.js 18/20 or higher
+* PostgreSQL 14+ (or Docker for quick setup: `docker compose up`)
+* npm
+
+---
+
+## 🚀 Local Development
+
+### 1) Install Dependencies
 
 ```bash
 npm install
 ```
 
-### ۲) ساخت دیتابیس PostgreSQL
+### 2) Create the PostgreSQL Database
 
 ```bash
 sudo -u postgres psql
@@ -50,7 +50,7 @@ GRANT ALL PRIVILEGES ON DATABASE app_db TO app;
 \q
 ```
 
-### ۳) تنظیم فایل محیطی
+### 3) Configure the Environment File
 
 ```bash
 cp .env.example .env
@@ -58,34 +58,39 @@ nano .env
 ```
 
 ```env
-# دیتابیس
+# Database
 DATABASE_URL=postgresql://app:your_password@127.0.0.1:5432/app_db
 
-# کلید امضای سشن (یک رشته تصادفی بلند بسازید)
+# Session signing key (generate a long random string)
 AUTH_SECRET=my-long-random-secret-string
 
-# آدرس عمومی سایت
+# Public site URL
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
-> 💡 برای ساخت `AUTH_SECRET`: `openssl rand -hex 32`
-
-### ۴) ساخت جداول و داده‌های نمونه
+> 💡 To generate `AUTH_SECRET`:
 
 ```bash
-npx drizzle-kit push        # ساخت جداول (migrate)
-npm run seed:all            # داده‌های نمونه + کاربر ادمین + مقالات دمو
+openssl rand -hex 32
 ```
 
-| اسکریپت | کار |
-|---|---|
-| `npm run seed` | seed کامل: ۲۶ محصول، ۶ برند، ۵ دسته، ۶ کاربر، سفارشات، نظرات، کوپن، بنر، تنظیمات، درگاه‌ها + مقالات |
-| `npm run seed:articles` | فقط مقالات دمو بلاگ (۱۰ مقاله کامل + ۳ دسته) — idempotent و بر اساس `slug` تکراری نمی‌سازد |
+### 4) Create Tables and Seed Demo Data
 
-> برنامه در اولین اجرا اگر دیتابیس خالی باشد به‌صورت خودکار seed می‌کند؛
-> اما با `scripts/seed.ts` می‌توانید دستی هم اجرا کنید.
+```bash
+npx drizzle-kit push        # Create tables (migrate)
+npm run seed:all            # Demo data + admin user + demo articles
+```
 
-### ۵) اجرا
+| Script                  | Description                                                                                                                       |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run seed`          | Full seed: 26 products, 6 brands, 5 categories, 6 users, orders, reviews, coupons, banners, settings, payment gateways + articles |
+| `npm run seed:articles` | Demo blog articles only (10 complete articles + 3 categories) — idempotent and does not create duplicates based on `slug`         |
+
+> The application automatically runs the seed on the first launch if the database is empty.
+>
+> You can also run it manually using `scripts/seed.ts`.
+
+### 5) Run the Application
 
 ```bash
 npm run dev
@@ -94,112 +99,125 @@ npm run dev
 
 ---
 
-## 🔑 اطلاعات ورود (پس از Seed)
+## 🔑 Login Credentials (After Seeding)
 
-| نقش | ایمیل | رمز عبور |
-|---|---|---|
-| **مدیر کل (Admin)** | `admin@example.com` | `Admin@12345` |
-| مدیر فروشگاه (Manager) | `manager@example.com` | `User@12345` |
-| مشتری طلایی (Gold) | `ali@example.com` | `User@12345` |
-| مشتری نقره‌ای (Silver) | `maryam@example.com` | `User@12345` |
+| Role            | Email                 | Password      |
+| --------------- | --------------------- | ------------- |
+| **Super Admin** | `admin@example.com`   | `Admin@12345` |
+| Store Manager   | `manager@example.com` | `User@12345`  |
+| Gold Customer   | `ali@example.com`     | `User@12345`  |
+| Silver Customer | `maryam@example.com`  | `User@12345`  |
 
-کدهای تخفیف نمونه: `WELCOME10` (۱۰٪)، `SUMMER500` (۵۰۰ هزار تومان)
+Sample discount codes:
 
-پنل مدیریت: `/admin` — پنل کاربر: `/account` — مقالات: `/blog`
+* `WELCOME10` — 10%
+* `SUMMER500` — 500,000 Tomans
 
----
-
-## 📡 اندپوینت‌های API
-
-| Method | Endpoint | توضیح |
-|---|---|---|
-| POST | `/api/auth/register` · `/api/auth/login` · `/api/auth/logout` | احراز هویت |
-| GET | `/api/auth/me` | کاربر فعلی |
-| GET | `/api/products` | لیست محصولات با فیلتر |
-| GET | `/api/products/[slug]` | جزئیات محصول |
-| GET | `/api/search?q=` | جستجوی اتوکامپلیت |
-| POST | `/api/coupons/validate` | اعتبارسنجی کد تخفیف |
-| GET/POST | `/api/orders` | سفارش‌های کاربر / ثبت سفارش |
-| GET | `/api/payment/zarinpal/request` · `/api/payment/zarinpal/verify` | پرداخت (شبیه‌سازی) |
-| GET/POST/DELETE | `/api/admin/media*` | مدیریت و آپلود تصاویر |
-| GET | `/api/seed` · `/api/health` | seed / سلامت |
+Admin panel: `/admin`
+Customer panel: `/account`
+Articles: `/blog`
 
 ---
 
+## 📡 API Endpoints
+
+| Method          | Endpoint                                                         | Description                  |
+| --------------- | ---------------------------------------------------------------- | ---------------------------- |
+| POST            | `/api/auth/register` · `/api/auth/login` · `/api/auth/logout`    | Authentication               |
+| GET             | `/api/auth/me`                                                   | Current user                 |
+| GET             | `/api/products`                                                  | Product list with filters    |
+| GET             | `/api/products/[slug]`                                           | Product details              |
+| GET             | `/api/search?q=`                                                 | Autocomplete search          |
+| POST            | `/api/coupons/validate`                                          | Validate discount code       |
+| GET/POST        | `/api/orders`                                                    | User orders / Create order   |
+| GET             | `/api/payment/zarinpal/request` · `/api/payment/zarinpal/verify` | Payment (simulated)          |
+| GET/POST/DELETE | `/api/admin/media*`                                              | Image management and uploads |
+| GET             | `/api/seed` · `/api/health`                                      | Seed / Health check          |
+
 ---
 
-## 🐳 اجرای سریع با Docker (فقط PostgreSQL)
+## 🐳 Quick Setup with Docker (PostgreSQL Only)
 
-> در نسخه قبلی، `docker-compose.yml` شامل MySQL، phpMyAdmin، بک‌اند لاراول و فرانت‌اند Nuxt بود؛
-> آن سرویس‌ها به‌کلی **حذف** شده‌اند. این پروژه یک مونولیت **Next.js + PostgreSQL** است
-> (دیتابیس MySQL/phpMyAdmin در آن هیچ کاربردی ندارد).
+> In the previous version, `docker-compose.yml` included MySQL, phpMyAdmin, a Laravel backend, and a Nuxt frontend.
+>
+> Those services have been completely **removed**. This project is a **Next.js + PostgreSQL monolith**.
+>
+> MySQL/phpMyAdmin are not used anywhere in this project.
 
 ```bash
-docker compose up -d     # postgres + app (اولین اجرا: npm ci → build → drizzle-kit push → seed → start)
+docker compose up -d     # postgres + app (first run: npm ci → build → drizzle-kit push → seed → start)
 docker compose logs -f app
 # → http://localhost:3000
 
-# فقط اگر می‌خواهید بدون داکر و با npm run dev روی همین دیتابیس کانتینری کار کنید:
+# Only if you want to work without Docker using npm run dev
+# with the same containerized database:
 cp .env.docker .env
 ```
 
-> ⚠️ مرحله `npm run build` داخل ایمیج به `DATABASE_URL` وصل می‌شود (sitemap و کوئری‌های داینامیک هنگام build اجرا می‌شوند)؛
-> به همین دلیل build در `docker compose` انجام می‌شود و سرویس `postgres` با alias `db` هم در شبکه در دسترس است.
+> ⚠️ The `npm run build` step inside the image connects to `DATABASE_URL` (dynamic sitemap and queries run during the build).
+>
+> Therefore, the build is performed inside `docker compose`, and the `postgres` service is available on the network through the `db` alias.
 
-سرویس‌ها:
+Services:
 
-| سرویس | نقش | پورت |
-|---|---|---|
-| `postgres` | PostgreSQL 16 (دیالکت Drizzle پروژه) | 5432 |
-| `app` | بیلد و اجرای Next.js (فرانت + API + پنل ادمین) | 3000 |
-| `adminer` *(اختیاری)* | ابزار وب مدیریت دیتابیس — جایگزین سازگار با Postgres برای phpMyAdmin | 8081 |
-| `seed` *(اختیاری)* | اجرای seed داده‌های نمونه + ۱۰ مقاله دمو (idempotent) | — |
+| Service                | Role                                                                                  | Port |
+| ---------------------- | ------------------------------------------------------------------------------------- | ---- |
+| `postgres`             | PostgreSQL 16 (Drizzle project dialect)                                               | 5432 |
+| `app`                  | Builds and runs Next.js (frontend + API + admin panel)                                | 3000 |
+| `adminer` *(optional)* | Web-based database management tool — PostgreSQL-compatible replacement for phpMyAdmin | 8081 |
+| `seed` *(optional)*    | Runs sample data + 10 demo articles seed                                              | —    |
 
 ```bash
-docker compose --profile admin up -d        # فعال کردن adminer
-docker compose run --rm seed                # seed دستی (مثلاً بعد از drop کردن دیتابیس)
-docker compose down -v                        # توقف و حذف کامل داده‌ها
+docker compose --profile admin up -d        # Enable Adminer
+docker compose run --rm seed                # Manual seed (e.g. after dropping the database)
+docker compose down -v                      # Stop and completely remove all data
 ```
 
-> در `up` معمولی، seed در `CMD` ایمیج اجرا می‌شود؛ `seed` جدا فقط وقتی لازم است که بخواهید داده‌ها را دوباره بسازید
-> (مثلاً برای دمو/ارائه). هر دو مسیر idempotent هستند و داده موجود را خراب نمی‌کنند.
+> In the normal `up` flow, the seed runs through the image `CMD`.
+>
+> The separate `seed` service is only needed when you want to rebuild the demo data, for example for a demo or presentation.
+>
+> Both approaches are idempotent and do not corrupt existing data.
 
 ---
 
-## 📝 بخش مقالات (بلاگ)
+## 📝 Blog / Articles Section
 
-- مسیرها: `/blog` (لیست + تب دسته‌ها + صفحه‌بندی) و `/blog/[slug]` (نمایش مقاله)
-- مدیریت: `/admin/articles` (فهرست) و `/admin/articles/[id]` (فرم ایجاد/ویرایش) — نیازمند سطح دسترسی `content`
-- مدل داده: جداول `articles` و `article_categories` با relation، و ایندکس `(is_published, published_at)`
-- محتوای دمو آماده: **۱۰ مقاله** با متن بلند و بخش‌بندی‌شده
+* Routes: `/blog` (list + category tabs + pagination) and `/blog/[slug]` (article page)
+* Management: `/admin/articles` (list) and `/admin/articles/[id]` (create/edit form) — requires the `content` permission
+* Data model: `articles` and `article_categories` tables with relations, plus an index on `(is_published, published_at)`
+* Ready-to-use demo content: **10 long, structured articles**
 
-| عنوان | دسته | slug |
-|---|---|---|
-| راهنمای جامع خرید گوشی موبایل در سال ۱۴۰۴ | راهنمای خرید | `mobile-buying-guide-1404` |
-| چطور بهترین نسبت قیمت به کیفیت را پیدا کنیم | راهنمای خرید | `best-value-phone-budget-guide` |
-| مقایسه آیفون ۱۵ پرو مکس با گلکسی S24 اولترا | مقایسه محصولات | `iphone-15-pro-max-vs-galaxy-s24-ultra` |
-| مقایسه دوربین گوشی‌های میان‌رده | مقایسه محصولات | `midrange-camera-comparison` |
-| ۵ نکته برای افزایش عمر باتری گوشی | راهنمای خرید | `5-tips-battery-life` |
-| هوش مصنوعی روی گوشی: چه چیزی واقعاً به درد می‌خورد؟ | اخبار تکنولوژی | `ai-on-mobile-phones` |
-| مقایسه پردازنده‌های پرچمدار ۲۰۲۴ | اخبار تکنولوژی | `flagship-soc-comparison-2024` |
-| راهنمای رجیستری، گارانتی و آکبند | راهنمای خرید | `registry-warranty-guide-iran` |
-| شارژ سریع و سلامت باتری | مقایسه محصولات | `fast-charging-battery-health` |
-| باشگاه مشتریان و کدهای تخفیف | راهنمای خرید | `loyalty-and-coupons-guide` |
+| Title                                                  | Category           | Slug                                    |
+| ------------------------------------------------------ | ------------------ | --------------------------------------- |
+| Complete Mobile Phone Buying Guide for 1404            | Buying Guide       | `mobile-buying-guide-1404`              |
+| How to Find the Best Price-to-Performance Ratio        | Buying Guide       | `best-value-phone-budget-guide`         |
+| iPhone 15 Pro Max vs. Galaxy S24 Ultra Comparison      | Product Comparison | `iphone-15-pro-max-vs-galaxy-s24-ultra` |
+| Mid-Range Phone Camera Comparison                      | Product Comparison | `midrange-camera-comparison`            |
+| 5 Tips to Extend Your Phone's Battery Life             | Buying Guide       | `5-tips-battery-life`                   |
+| AI on Mobile Phones: What Is Actually Useful?          | Tech News          | `ai-on-mobile-phones`                   |
+| 2024 Flagship Processor Comparison                     | Tech News          | `flagship-soc-comparison-2024`          |
+| Registration, Warranty, and Factory-Sealed Phone Guide | Buying Guide       | `registry-warranty-guide-iran`          |
+| Fast Charging and Battery Health                       | Product Comparison | `fast-charging-battery-health`          |
+| Loyalty Club and Discount Codes                        | Buying Guide       | `loyalty-and-coupons-guide`             |
 
-- لیست مقالات دمو در `src/lib/seed.ts` (آرایه `demoArticles`) نگه داشته می‌شود و تابع `seedDemoArticles()`
-  دسته‌ها/مقالاتِ جاافتاده را می‌سازد؛ یعنی روی دیتابیس موجود هم بدون ایجاد داده تکراری کار می‌کند.
-- اگر دیتابیس از قبل پر باشد ولی جدول `articles` خالی بماند، برنامه در اولین رندر خودش مقالات دمو را اضافه می‌کند.
-- داخل متن مقاله‌ها از هدینگ کوتاه با پیشوند `## ` استفاده شده که در `/blog/[slug]` به‌صورت `<h2>` رندر می‌شود
-  (بقیه خطوط، پاراگراف).
-- برای افزودن مقاله دمو جدید: فقط یک آبجکت به `demoArticles` اضافه کنید (با `slug` یکتا) و `npm run seed:articles` را بزنید.
+* The demo article list is stored in `src/lib/seed.ts` inside the `demoArticles` array, and the `seedDemoArticles()` function creates missing categories/articles. This means it also works safely on an existing database without creating duplicate data.
+* If the database is already populated but the `articles` table is empty, the application automatically adds the demo articles during the first render.
+* Article content uses short headings with the `## ` prefix, which are rendered as `<h2>` inside `/blog/[slug]`.
+* All other lines are rendered as paragraphs.
+* To add a new demo article, simply add an object to `demoArticles` with a unique `slug`, then run:
+
+```bash
+npm run seed:articles
+```
 
 ---
 
-## 🚀 استقرار روی سرور مجازی (VPS Ubuntu)
+## 🚀 Deployment on a VPS (Ubuntu)
 
-راهنمای گام‌به‌گام برای آپلود پروژه روی یک VPS اوبونتو و اختصاص IP (یا دامنه) به آن.
+Step-by-step instructions for uploading the project to an Ubuntu VPS and assigning an IP address or domain to it.
 
-## ۱) آماده‌سازی سرور
+## 1) Prepare the Server
 
 ```bash
 sudo apt update && sudo apt upgrade -y
@@ -211,14 +229,14 @@ sudo apt install -y nodejs
 # PostgreSQL
 sudo apt install -y postgresql postgresql-contrib
 
-# PM2 (اجرای دائمی)
+# PM2 (process manager)
 sudo npm install -g pm2
 
-# Nginx (Proxy + دامنه/IP)
+# Nginx (Proxy + domain/IP)
 sudo apt install -y nginx
 ```
 
-## ۲) ساخت دیتابیس روی سرور
+## 2) Create the Database on the Server
 
 ```bash
 sudo -u postgres psql
@@ -231,21 +249,21 @@ GRANT ALL PRIVILEGES ON DATABASE elixir_mobile TO elixir;
 \q
 ```
 
-## ۳) آپلود پروژه به سرور
+## 3) Upload the Project to the Server
 
-دو روش — با Git یا با SCP:
+Two methods are available — Git or SCP:
 
 ```bash
-# روش ۱: با Git
+# Method 1: Git
 cd /var/www
 git clone https://your-repo.git elixir-mobile
 cd elixir-mobile
 
-# روش ۲: با SCP (از سیستم لوکال خودتان)
-# scp -r ./elixir-mobile user@SERVER_IP:/var/www/
+# Method 2: SCP (from your local machine)
+scp -r ./elixir-mobile user@SERVER_IP:/var/www/
 ```
 
-## ۴) تنظیم محیط و نصب
+## 4) Configure the Environment and Install Dependencies
 
 ```bash
 cd /var/www/elixir-mobile
@@ -256,7 +274,7 @@ nano .env
 
 ```env
 DATABASE_URL=postgresql://elixir:A_STRONG_PASSWORD@127.0.0.1:5432/elixir_mobile
-AUTH_SECRET=<خروجی openssl rand -hex 32>
+AUTH_SECRET=<output of openssl rand -hex 32>
 NEXT_PUBLIC_SITE_URL=https://YOUR_DOMAIN_OR_IP
 ```
 
@@ -267,23 +285,23 @@ npx tsx scripts/seed.ts
 npm run build
 ```
 
-## ۵) اجرای دائمی با PM2
+## 5) Run the Application Permanently with PM2
 
 ```bash
 pm2 start npm --name "elixir-mobile" -- start
-pm2 startup          # اجرای خودکار پس از ریبوت
+pm2 startup          # Automatically start after reboot
 pm2 save
 ```
 
-بررسی:
+Check the application:
 
 ```bash
 pm2 status
 pm2 logs elixir-mobile
-curl http://127.0.0.1:3000/api/health   # باید {"ok":true} برگرداند
+curl http://127.0.0.1:3000/api/health   # Should return {"ok":true}
 ```
 
-## ۶) اختصاص IP / دامنه با Nginx
+## 6) Assign an IP / Domain with Nginx
 
 ```bash
 sudo nano /etc/nginx/sites-available/elixir-mobile
@@ -292,9 +310,9 @@ sudo nano /etc/nginx/sites-available/elixir-mobile
 ```nginx
 server {
     listen 80;
-    server_name SERVER_IP;   # یا دامنه: shop.example.com
+    server_name SERVER_IP;   # Or domain: shop.example.com
 
-    client_max_body_size 20M;   # برای آپلود تصاویر
+    client_max_body_size 20M;   # For image uploads
 
     location / {
         proxy_pass http://127.0.0.1:3000;
@@ -322,20 +340,30 @@ sudo systemctl reload nginx
 sudo ufw allow 'Nginx Full'
 ```
 
-حالا سایت روی `http://SERVER_IP` در دسترس است.
+The website is now available at:
 
-## ۷) HTTPS با گواهی رایگان (بدون دامنه نیست؛ با دامنه توصیه‌شده)
+```text
+http://SERVER_IP
+```
+
+## 7) HTTPS with a Free Certificate
+
+> A domain is required; using HTTPS with a domain is recommended.
 
 ```bash
 sudo apt install -y certbot python3-certbot-nginx
 sudo certbot --nginx -d shop.example.com
 ```
 
-بعد از گرفتن گواهی، `NEXT_PUBLIC_SITE_URL` را به `https://...` تغییر دهید و `pm2 restart elixir-mobile` بزنید.
+After obtaining the certificate, change `NEXT_PUBLIC_SITE_URL` to `https://...` and restart the application:
 
-## ۸) پوشه آپلود تصاویر
+```bash
+pm2 restart elixir-mobile
+```
 
-تصاویر آپلودی در `public/uploads/` ذخیره می‌شوند:
+## 8) Image Upload Directory
+
+Uploaded images are stored in `public/uploads/`:
 
 ```bash
 mkdir -p public/uploads
@@ -345,42 +373,42 @@ sudo chmod -R 755 public/uploads
 
 ---
 
-## 📌 دستورات پرکاربرد
+## 📌 Common Commands
 
-| موضوع | دستور |
-|---|---|
-| لاگ | `pm2 logs elixir-mobile` |
-| ری‌استارت | `pm2 restart elixir-mobile` |
-| بروزرسانی بعد از تغییر کد | `git pull && npm install && npx drizzle-kit push && npm run build && pm2 restart elixir-mobile` |
-| پشتیبان دیتابیس | `pg_dump -U elixir elixir_mobile > backup.sql` |
-| بازیابی | `psql -U elixir elixir_mobile < backup.sql` |
+| Purpose                   | Command                                                                                         |
+| ------------------------- | ----------------------------------------------------------------------------------------------- |
+| Logs                      | `pm2 logs elixir-mobile`                                                                        |
+| Restart                   | `pm2 restart elixir-mobile`                                                                     |
+| Update after code changes | `git pull && npm install && npx drizzle-kit push && npm run build && pm2 restart elixir-mobile` |
+| Database backup           | `pg_dump -U elixir elixir_mobile > backup.sql`                                                  |
+| Restore                   | `psql -U elixir elixir_mobile < backup.sql`                                                     |
 
 ---
 
-## 📁 ساختار پروژه
+## 📁 Project Structure
 
-```
+```text
 src/
 ├── app/
-│   ├── (shop)/            # فروشگاه (خانه، محصولات، دسته‌بندی، سبد، چک‌اوت، مقالات)
-│   │   └── account/       # پنل مشتری
-│   ├── admin/             # پنل مدیریت
+│   ├── (shop)/            # Store (home, products, categories, cart, checkout, articles)
+│   │   └── account/       # Customer panel
+│   ├── admin/             # Admin panel
 │   ├── api/               # REST API
 │   ├── actions/           # Server Actions
-│   ├── (shop)/blog/       # لیست مقالات و صفحه مقاله
-│   ├── sitemap.ts         # sitemap.xml داینامیک
+│   ├── (shop)/blog/       # Article list and article page
+│   ├── sitemap.ts         # Dynamic sitemap.xml
 │   └── robots.ts          # robots.txt
-├── components/            # کامپوننت‌های UI و بخش‌های مختلف
+├── components/            # UI components and various sections
 ├── db/
-│   ├── schema.ts          # مدل‌های دیتابیس (Drizzle)
-│   └── index.ts           # کلاینت PostgreSQL
+│   ├── schema.ts          # Database models (Drizzle)
+│   └── index.ts           # PostgreSQL client
 ├── lib/
-│   ├── data.ts            # لایه کوئری
-│   ├── auth.ts            # احراز هویت (سشن امضاشده)
-│   ├── orders.ts          # منطق سفارش/پرداخت/باشگاه
-│   ├── seed.ts            # داده‌های نمونه + مقالات دمو (demoArticles / seedDemoArticles)
-│   └── utils.ts           # فرمت تومان/تاریخ شمسی، سطوح باشگاه، برچسب وضعیت‌ها
+│   ├── data.ts            # Query layer
+│   ├── auth.ts            # Authentication (signed sessions)
+│   ├── orders.ts          # Order/payment/loyalty logic
+│   ├── seed.ts            # Demo data + demo articles (demoArticles / seedDemoArticles)
+│   └── utils.ts           # Toman/date formatting, loyalty tiers, status labels
 └── scripts/
-    ├── seed.ts            # اجرای seed کامل
-    └── seed_articles_once.ts  # فقط مقالات دمو (idempotent)
+    ├── seed.ts            # Full seed execution
+    └── seed_articles_once.ts  # Demo articles only (idempotent)
 ```
